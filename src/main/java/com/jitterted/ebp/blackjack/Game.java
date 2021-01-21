@@ -38,10 +38,16 @@ public class Game {
     do {
       game.initialDeal();
       game.play();
-      System.out.println("Play again? (y/n):");
-      Scanner scanner = new Scanner(System.in);
-      input = scanner.nextLine();
+      input = playerInput();
     } while (input.equalsIgnoreCase("y"));
+  }
+
+  private static String playerInput() {
+    String input;
+    System.out.println("Play again? (y/n):");
+    Scanner scanner = new Scanner(System.in);
+    input = scanner.nextLine();
+    return input;
   }
 
   private static void resetScreen() {
@@ -53,60 +59,64 @@ public class Game {
   }
 
   public void initialDeal() {
-    dealerHand = new Hand();
-    playerHand = new Hand();
-
-    // deal first round of cards, players first
     dealHand();
-
-    // deal next round of cards
     dealHand();
   }
 
   private void dealHand() {
-    drawCardIntoPlayerHand();
-    drawCardIntoDealerHand();
-  }
-
-  private void drawCardIntoDealerHand() {
+    // Rule: players first
+    playerHand.add(deck.draw());
     dealerHand.add(deck.draw());
   }
 
-  private void drawCardIntoPlayerHand() {
-    playerHand.add(deck.draw());
-  }
-
   public void play() {
-    // get Player's decision: hit until they stand, then they're done (or they go bust)
-    boolean playerBusted = false;
-    while (!playerBusted) {
-      displayGameState();
-      String playerChoice = inputFromPlayer().toLowerCase();
-      if (playerChoice.startsWith("s")) {
-        break;
-      }
-      if (playerChoice.startsWith("h")) {
-        drawCardIntoPlayerHand();
-        playerBusted = playerHand.isBusted();
-      } else {
-        System.out.println("You need to [H]it or [S]tand");
-      }
-    }
+    boolean playerBusted = playerTurn();
 
-    // Dealer makes its choice automatically based on a simple heuristic (<=16, hit, 17>stand)
-    if (!playerBusted) {
-      dealerPlays();
-    }
+    dealerTurn(playerBusted);
 
     displayFinalGameState();
 
     handleGameOutcome();
   }
 
+  private void dealerTurn(boolean playerBusted) {
+    // Dealer makes its choice automatically based on a simple heuristic (<=16, hit, 17>stand)
+    if (!playerBusted) {
+      dealerPlays();
+    }
+  }
+
   private void dealerPlays() {
     while (dealerHand.value() <= 16) {
-      drawCardIntoDealerHand();
+      dealerHand.add(deck.draw());
     }
+  }
+
+  private boolean playerTurn() {
+    // get Player's decision: hit until they stand, then they're done (or they go bust)
+    boolean playerBusted = false;
+    while (!playerBusted) {
+      displayGameState();
+      String playerChoice = inputFromPlayer().toLowerCase();
+      if (playerStands(playerChoice)) {
+        break;
+      }
+      if (playerHits(playerChoice)) {
+        playerHand.add(deck.draw());
+        playerBusted = playerHand.isBusted();
+      } else {
+        System.out.println("You need to [H]it or [S]tand");
+      }
+    }
+    return playerBusted;
+  }
+
+  private boolean playerStands(String playerChoice) {
+    return playerChoice.startsWith("s");
+  }
+
+  private boolean playerHits(String playerChoice) {
+    return playerChoice.startsWith("h");
   }
 
   private void handleGameOutcome() {
