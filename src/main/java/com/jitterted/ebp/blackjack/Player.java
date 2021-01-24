@@ -3,6 +3,7 @@ package com.jitterted.ebp.blackjack;
 public class Player {
     private int playerBet = 0;
     private int playerBalance = 0;
+    private int totalBet = 0;
 
     public void playerDeposits(int amount) {
         playerBalance += amount;
@@ -15,6 +16,7 @@ public class Player {
         if(playerBalance < betAmount)
             throw new IllegalArgumentException();
         this.playerBet = betAmount;
+        this.totalBet += playerBet;
         this.playerBalance -= betAmount;
     }
 
@@ -32,5 +34,9 @@ public class Player {
 
     public int playerBalance() {
         return playerBalance;
+    }
+
+    public int totalAmountBet() {
+        return totalBet;
     }
 }

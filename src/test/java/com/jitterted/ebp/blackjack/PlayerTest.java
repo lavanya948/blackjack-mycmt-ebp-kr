@@ -90,4 +90,45 @@ class PlayerTest {
         assertThat(player.playerBalance()).isEqualTo(100 - 50 - 25);
     }
 
+    @Test
+    void playerBetAmount() {
+        Player player = new Player();
+        player.playerDeposits(100);
+
+        player.playerBets(50);
+        assertThat(player.totalAmountBet()).isEqualTo(50);
+    }
+
+    @Test
+    void playerBetAmountWhenPlayerBetsMultipleTimes() {
+        Player player = new Player();
+        player.playerDeposits(100);
+
+        player.playerBets(50);
+        player.playerBets(50);
+        assertThat(player.totalAmountBet()).isEqualTo(50 + 50);
+    }
+
+    @Test
+    void playerBalanceWhenPlayerBetsMultipleTimesAndWins() {
+        Player player = new Player();
+        player.playerDeposits(100);
+
+        player.playerBets(50);
+        player.playerWins();
+        player.playerBets(50);
+        assertThat(player.playerBalance()).isEqualTo(50 + (50 * 2) - 50);
+    }
+
+    @Test
+    void playerBalanceWhenPlayerBetsMultipleTimesAndWinsBoth() {
+        Player player = new Player();
+        player.playerDeposits(100);
+
+        player.playerBets(50);
+        player.playerWins();
+        player.playerBets(50);
+        player.playerWins();
+        assertThat(player.playerBalance()).isEqualTo(150 - 50 + (50 * 2));
+    }
 }
