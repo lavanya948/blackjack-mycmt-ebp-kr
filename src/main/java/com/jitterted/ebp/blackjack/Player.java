@@ -10,14 +10,32 @@ public class Player {
     }
 
     public void playerBets(int betAmount) {
-        if(playerBalance <= 0 || betAmount <= 0)
-            throw new IllegalArgumentException();
+        checkAmountsValid(betAmount);
+        checkEnoughBalance(betAmount);
+        addBonusIfRequired(betAmount);
+        updateBalance(betAmount);
+    }
 
-        if(playerBalance < betAmount)
-            throw new IllegalArgumentException();
+    private void updateBalance(int betAmount) {
         this.playerBet = betAmount;
         this.totalBet += playerBet;
         this.playerBalance -= betAmount;
+    }
+
+    private void addBonusIfRequired(int betAmount) {
+        if (betAmount >= 100) {
+            playerBalance += 10;
+        }
+    }
+
+    private void checkEnoughBalance(int betAmount) {
+        if(playerBalance < betAmount)
+            throw new IllegalArgumentException();
+    }
+
+    private void checkAmountsValid(int betAmount) {
+        if(playerBalance <= 0 || betAmount <= 0)
+            throw new IllegalArgumentException();
     }
 
     public void playerLoses() {

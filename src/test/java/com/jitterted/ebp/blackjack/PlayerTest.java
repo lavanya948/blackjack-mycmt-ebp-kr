@@ -131,4 +131,22 @@ class PlayerTest {
         player.playerWins();
         assertThat(player.playerBalance()).isEqualTo(150 - 50 + (50 * 2));
     }
+
+    @Test
+    void playerBalanceShouldAdd10WhenPlayerBets100() {
+        Player player = new Player();
+        player.playerDeposits(100);
+
+        player.playerBets(100);
+        assertThat(player.playerBalance()).isEqualTo(100 - 100 + 10);
+    }
+
+    @Test
+    void playerBalanceShouldAdd10WhenPlayerBetsMoreThan100() {
+        Player player = new Player();
+        player.playerDeposits(120);
+
+        player.playerBets(110);
+        assertThat(player.playerBalance()).isEqualTo(120 - 110 + 10);
+    }
 }
